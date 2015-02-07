@@ -1,0 +1,22 @@
+{
+	"name": "axial-prime",
+	"version": "1.0.0",
+	"description": "Find the chief of N axis.",
+	"main": "ordinalize.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rektide/axial-prime"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/rektide/axial-prime/issues"
+	},
+	"homepage": "https://github.com/rektide/axial-prime",
+	"dependencies": {
+		"lodash": "^3.1.0"
+	}
+}
