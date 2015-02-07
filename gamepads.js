@@ -1,5 +1,6 @@
 var wantedIds= {},
-  wantedIndexes= {}
+  wantedIndexes= {},
+  wantAll= []
 
 function signalAll(gamepad, waiting){
 	for(var i= 0; i < waiting.length; ++i){
@@ -25,22 +26,46 @@ window.addEventListener('gamepadconnected', function(e){
 })
 
 module.exports = function(idOrIndex, cb){
-	var gamepads= navigator.getGamepads()
-	if(isNaN(idOrIndex)){
-		var cbs= wantedIds[idOrIndex] || (wantedIds[idOrIndex]= [])
-		cbs.push(cb)
-		gamepads.forEach(function(gamepad){
-			if(gamepad.id.indexOf(idOrIndex) !== -1){
-				cb(gamepad)
-			}
-		})
-	}else{
-		var cbs= wantedIndexes[idOrIndex] || (wantedIndexes[idOrIndex]= [])
-		cbs.push(cb)
-		gamepads.forEach(function(gamepad){
-			if(gamepad.index === idOrIndex){
-				cb(gamepad)
-			}
-		})
+	if(idOrIndex instanceof Function){
+		cb= idOrIndex
+		idOrIndex= undefined
 	}
+
+	if(!idOrIndex){
+		if(cb){
+			wantAll.push(cb)
+		}
+		filter= function(gamepad){
+			return true
+		}
+	}else if(isNaN(idOrIndex)){
+		if(cb){
+			var cbs= wantedIds[idOrIndex] || (wantedIds[idOrIndex]= [])
+			cbs.push(cb)
+		}
+		filter= function(gamepad){
+			return gamepad.id.indexOf(idOrIndex) !== -1
+		}
+	}else{
+		if(cb){
+			var cbs= wantedIndexes[idOrIndex] || (wantedIndexes[idOrIndex]= [])
+			cbs.push(cb)
+		}
+		filter= function(gamepad){
+			return gamepad.index === idOrIndex
+		}
+	}
+
+	var gamepads= navigator.getGamepads(),
+	  found= 0
+	gamepads.forEach(function(gamepad){
+		if(!filter(gamepad)){
+			return
+		}
+		++found
+		if(cb)
+			cb(gamepad)
+	})
+
+	return found
 }
